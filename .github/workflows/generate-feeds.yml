@@ -20,12 +20,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
       - name: Generate feeds
-        run: python scripts/generate_feeds.py
+        # Stdlib-only script; the runner's preinstalled Python 3 suffices.
+        run: python3 scripts/generate_feeds.py
 
       - name: Commit and push if feeds changed
         run: |

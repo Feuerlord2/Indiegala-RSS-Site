@@ -11,7 +11,7 @@ https://docs.indiegala.com/support/rss_feed.html:
 For the bundles themselves we use the public JSON API of barter.vg, a
 community site that tracks bundles across stores (no API key required):
 
-    https://bartervg.com/browse/bundles/json/
+    https://bartervg.com/bundles/json
 
 IndieGala's terms allow feed access at no more than 240 requests/hour and
 1 request/second; a scheduled run of this script performs 2 requests total,
@@ -120,6 +120,13 @@ def strip_lastbuilddate(xml_text: str) -> str:
     return re.sub(r"<lastBuildDate>[^<]*</lastBuildDate>", "", xml_text)
 
 
+def to_int(value) -> int | None:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
 def write_feed(path: Path, title: str, description: str, items: list[dict]) -> bool:
     """Write an RSS 2.0 feed; returns True if the file changed.
 
@@ -139,7 +146,7 @@ def write_feed(path: Path, title: str, description: str, items: list[dict]) -> b
         f'<atom:link href="{escape(SITE_URL + path.name)}" rel="self" type="application/rss+xml"/>',
         f"<description>{escape(description)}</description>",
         "<language>en</language>",
-        "<lastBuildDate>__LASTBUILD__</lastBuildDate>",
+        f"<lastBuildDate>{now}</lastBuildDate>",
     ]
     for item in items:
         pubdate = old_dates.get(item["guid"]) or item.get("pubDate") or now
@@ -156,11 +163,11 @@ def write_feed(path: Path, title: str, description: str, items: list[dict]) -> b
     new_xml = "\n".join(parts)
 
     old_xml = path.read_text(encoding="utf-8") if path.exists() else ""
-    if strip_lastbuilddate(new_xml.replace("__LASTBUILD__", "")) == strip_lastbuilddate(old_xml):
+    if strip_lastbuilddate(new_xml) == strip_lastbuilddate(old_xml):
         log(f"OK: {path.name} unchanged ({len(items)} items)")
         return False
 
-    path.write_text(new_xml.replace("__LASTBUILD__", now), encoding="utf-8")
+    path.write_text(new_xml, encoding="utf-8")
     log(f"OK: {path.name} written ({len(items)} items)")
     return True
 
@@ -202,25 +209,13 @@ def bundle_items() -> list[dict] | None:
             continue
         meta = entry.get("meta") if isinstance(entry.get("meta"), dict) else entry
         storename = str(meta.get("storename") or "").strip()
-        try:
-            store = int(meta.get("store"))
-        except (TypeError, ValueError):
-            store = None
-        if store != BARTER_INDIEGALA_STORE_ID and storename.lower() != "indiegala":
+        if to_int(meta.get("store")) != BARTER_INDIEGALA_STORE_ID and storename.lower() != "indiegala":
             continue
 
         title = str(meta.get("title") or "").strip()
         if not title:
             continue
-        try:
-            id_key = int(bundle_id)
-        except (TypeError, ValueError):
-            id_key = 0
-        try:
-            start_key = int(meta.get("start"))
-        except (TypeError, ValueError):
-            start_key = 0
-        sort_key = (start_key, id_key)
+        sort_key = (to_int(meta.get("start")) or 0, to_int(bundle_id) or 0)
         link = str(meta.get("url") or "").strip() or f"https://barter.vg/bundle/{bundle_id}/"
 
         description = f"IndieGala bundle: {title}."
@@ -244,6 +239,13 @@ def bundle_items() -> list[dict] | None:
             )
         )
 
+    if not items:
+        # barter.vg has tracked IndieGala bundles for a decade; an empty
+        # result means a schema change or filter mismatch, not reality.
+        # Treat it as a source failure so the previous feed is kept.
+        log("WARN: no IndieGala bundles found in barter.vg data")
+        return None
+
     # Newest first by start date (bundle ids are not strictly chronological).
     items.sort(key=lambda pair: pair[0], reverse=True)
     return [item for _, item in items[:MAX_BUNDLE_ITEMS]]
@@ -261,10 +263,17 @@ def bundle_items() -> list[dict] | None:
 
 def sale_description(node: ET.Element) -> str:
     parts = []
-    price = node.findtext("priceEUR") or node.findtext("priceUSD")
-    discount = node.findtext("discountPriceEUR") or node.findtext("discountPriceUSD")
-    percent = node.findtext("discountPercentEUR") or node.findtext("discountPercentUSD")
-    currency = "EUR" if node.findtext("priceEUR") else "USD"
+    # Use the first currency that has data, and take ALL price fields from
+    # that same currency so amounts and label can never mix.
+    price = discount = percent = None
+    currency = "USD"
+    for cur in ("EUR", "USD"):
+        p = node.findtext(f"price{cur}")
+        d = node.findtext(f"discountPrice{cur}")
+        if p or d:
+            currency, price, discount = cur, p, d
+            percent = node.findtext(f"discountPercent{cur}")
+            break
     if discount:
         parts.append(f"{discount} {currency}")
         if percent:
@@ -316,10 +325,33 @@ def sale_items() -> list[dict] | None:
         )
         if len(items) >= MAX_SALE_ITEMS:
             break
+    if not items:
+        # The store always has discounted games; an empty item list means a
+        # block page or format change. Keep the previous feed instead.
+        log("WARN: no items found in IndieGala store RSS")
+        return None
     return items
 
 
 # --------------------------------------------------------------------------
+
+
+FEEDS = [
+    (
+        bundle_items,
+        "games.rss",
+        "IndieGala Game Bundles",
+        "New game bundles on IndieGala, tracked via barter.vg.",
+        "bundles (barter.vg)",
+    ),
+    (
+        sale_items,
+        "sales.rss",
+        "IndieGala Store Sales",
+        "Discounted games in the IndieGala store, from the official IndieGala RSS feed.",
+        "store sale (indiegala.com)",
+    ),
+]
 
 
 def main() -> int:
@@ -327,37 +359,20 @@ def main() -> int:
     changed = False
     failures = []
 
-    bundles = bundle_items()
-    if bundles is None:
-        failures.append("bundles (barter.vg)")
-        log("WARN: keeping previous games.rss (source unreachable)")
-    else:
-        changed |= write_feed(
-            DOCS / "games.rss",
-            "IndieGala Game Bundles",
-            "New game bundles on IndieGala, tracked via barter.vg.",
-            bundles,
-        )
-
-    sales = sale_items()
-    if sales is None:
-        failures.append("store sale (indiegala.com)")
-        log("WARN: keeping previous sales.rss (source unreachable)")
-    else:
-        changed |= write_feed(
-            DOCS / "sales.rss",
-            "IndieGala Store Sales",
-            "Discounted games in the IndieGala store, from the official IndieGala RSS feed.",
-            sales,
-        )
+    for source, filename, title, description, label in FEEDS:
+        items = source()
+        if items is None:
+            failures.append(label)
+            log(f"WARN: keeping previous {filename} (source failed)")
+        else:
+            changed |= write_feed(DOCS / filename, title, description, items)
 
     if failures:
         log(f"NOTE: {len(failures)} source(s) failed this run: {', '.join(failures)}")
-    # Fail the job only if nothing could be generated at all and no previous
-    # feeds exist to fall back on.
-    have_any = any((DOCS / name).exists() for name in ("games.rss", "sales.rss"))
-    if not have_any:
-        log("ERROR: no feeds could be generated and none exist yet")
+    # A single failed source keeps its previous feed and stays green; only
+    # fail the job (and alert via Actions) when every source is broken.
+    if len(failures) == len(FEEDS):
+        log("ERROR: all feed sources failed")
         return 1
     log("Done." + (" Feeds changed." if changed else " No changes."))
     return 0
