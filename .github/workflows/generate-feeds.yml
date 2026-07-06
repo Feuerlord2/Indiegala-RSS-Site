@@ -1,0 +1,40 @@
+name: Generate RSS feeds
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Every 6 hours. Each run performs 2 outbound requests, far below
+    # IndieGala's feed limit of 240 requests/hour.
+    - cron: "23 */6 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: generate-feeds
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Generate feeds
+        run: python scripts/generate_feeds.py
+
+      - name: Commit and push if feeds changed
+        run: |
+          git add docs
+          if git diff --cached --quiet; then
+            echo "No feed changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Update RSS feeds"
+          git push
