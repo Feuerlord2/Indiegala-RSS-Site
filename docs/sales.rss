@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+<title>IndieGala Store Sales</title>
+<link>https://feuerlord2.github.io/Indiegala-RSS-Site/</link>
+<atom:link href="https://feuerlord2.github.io/Indiegala-RSS-Site/sales.rss" rel="self" type="application/rss+xml"/>
+<description>Discounted games in the IndieGala store, from the official IndieGala RSS feed.</description>
+<language>en</language>
+<lastBuildDate>Mon, 06 Jul 2026 08:38:57 +0000</lastBuildDate>
+<item>
+<title>Feed initialized - IndieGala store sales will appear here</title>
+<link>https://www.indiegala.com/store</link>
+<guid isPermaLink="false">seed-sales</guid>
+<description>This feed updates automatically every 6 hours. Discounted IndieGala store games will appear here as soon as the first scheduled run completes.</description>
+<pubDate>Mon, 06 Jul 2026 08:38:57 +0000</pubDate>
+</item>
+</channel>
+</rss>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+<title>IndieGala Game Bundles</title>
+<link>https://feuerlord2.github.io/Indiegala-RSS-Site/</link>
+<atom:link href="https://feuerlord2.github.io/Indiegala-RSS-Site/games.rss" rel="self" type="application/rss+xml"/>
+<description>New game bundles on IndieGala, tracked via barter.vg.</description>
+<language>en</language>
+<lastBuildDate>Mon, 06 Jul 2026 08:38:57 +0000</lastBuildDate>
+<item>
+<title>Feed initialized - IndieGala game bundles will appear here</title>
+<link>https://www.indiegala.com/bundles</link>
+<guid isPermaLink="false">seed-games</guid>
+<description>This feed updates automatically every 6 hours. New IndieGala game bundles will appear here as soon as the first scheduled run completes.</description>
+<pubDate>Mon, 06 Jul 2026 08:38:57 +0000</pubDate>
+</item>
+</channel>
+</rss>
