@@ -6,7 +6,14 @@
 <atom:link href="https://feuerlord2.github.io/Indiegala-RSS-Site/games.rss" rel="self" type="application/rss+xml"/>
 <description>New game bundles on IndieGala, tracked via barter.vg.</description>
 <language>en</language>
-<lastBuildDate>Mon, 27 Jul 2026 20:01:30 +0000</lastBuildDate>
+<lastBuildDate>Wed, 29 Jul 2026 14:36:44 +0000</lastBuildDate>
+<item>
+<title>Waifu Love Bundle</title>
+<link>https://www.indiegala.com/bundle/waifu-love-bundle</link>
+<guid isPermaLink="false">barter-bundle-9076</guid>
+<description>IndieGala bundle: Waifu Love Bundle. Contains 16 games. Available until Mon, 31 Aug 2026 12:29:00 +0000.</description>
+<pubDate>Wed, 29 Jul 2026 13:00:00 +0000</pubDate>
+</item>
 <item>
 <title>Horror Station Bundle</title>
 <link>https://www.indiegala.com/bundle/horror-station-bundle</link>
