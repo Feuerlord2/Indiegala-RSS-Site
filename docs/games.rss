@@ -6,7 +6,14 @@
 <atom:link href="https://feuerlord2.github.io/Indiegala-RSS-Site/games.rss" rel="self" type="application/rss+xml"/>
 <description>New game bundles on IndieGala, tracked via barter.vg.</description>
 <language>en</language>
-<lastBuildDate>Tue, 01 Sep 2026 16:46:26 +0000</lastBuildDate>
+<lastBuildDate>Wed, 02 Sep 2026 16:42:23 +0000</lastBuildDate>
+<item>
+<title>Pixel Traditions Bundle 4</title>
+<link>https://www.indiegala.com/bundle/pixel-traditions4-bundle</link>
+<guid isPermaLink="false">barter-bundle-9156</guid>
+<description>IndieGala bundle: Pixel Traditions Bundle 4. Contains 8 games. Available until Wed, 30 Sep 2026 10:29:00 +0000.</description>
+<pubDate>Wed, 02 Sep 2026 13:00:00 +0000</pubDate>
+</item>
 <item>
 <title>New Signal Bundle</title>
 <link>https://www.indiegala.com/bundle/new-signal-bundle</link>
