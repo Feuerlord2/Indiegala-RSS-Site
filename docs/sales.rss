@@ -6,7 +6,7 @@
 <atom:link href="https://feuerlord2.github.io/Indiegala-RSS-Site/sales.rss" rel="self" type="application/rss+xml"/>
 <description>Discounted games in the IndieGala store, from the official IndieGala RSS feed.</description>
 <language>en</language>
-<lastBuildDate>Thu, 03 Sep 2026 04:46:47 +0000</lastBuildDate>
+<lastBuildDate>Thu, 03 Sep 2026 16:33:44 +0000</lastBuildDate>
 <item>
 <title>Red Faction Triple Pack</title>
 <link>https://www.indiegala.com/store/game/red-faction-triple-pack/00001_ig</link>
@@ -870,17 +870,6 @@
 <pubDate>Tue, 07 Jul 2026 04:29:39 +0000</pubDate>
 </item>
 <item>
-<title>Outcast - A New Beginning</title>
-<link>https://www.indiegala.com/store/game/outcast-a-new-beginning/1013140</link>
-<guid isPermaLink="false">outcast-a-new-beginning</guid>
-<description>39.99 EUR (-75.0%) instead of 39.99 EUR - 
-                    
-                        Steam key
-                    
-                 - by 680</description>
-<pubDate>Tue, 07 Jul 2026 04:29:39 +0000</pubDate>
-</item>
-<item>
 <title>River City Saga: Three Kingdoms</title>
 <link>https://www.indiegala.com/store/game/river-city-saga-three-kingdoms/1013220</link>
 <guid isPermaLink="false">river-city-saga-three-kingdoms</guid>
@@ -923,6 +912,17 @@
                     
                  - by 311</description>
 <pubDate>Tue, 07 Jul 2026 04:29:39 +0000</pubDate>
+</item>
+<item>
+<title>Record of Agarest War Mariage Deluxe Pack</title>
+<link>https://www.indiegala.com/store/game/record-of-agarest-war-mariage-deluxe-pack/1015490</link>
+<guid isPermaLink="false">record-of-agarest-war-mariage-deluxe-pack</guid>
+<description>8.19 EUR (-85.0%) instead of 8.19 EUR - 
+                    
+                        Steam key
+                    
+                 - by Idea Factory</description>
+<pubDate>Thu, 03 Sep 2026 16:33:44 +0000</pubDate>
 </item>
 </channel>
 </rss>
